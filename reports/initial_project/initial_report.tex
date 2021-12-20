@@ -44,10 +44,13 @@
 \section{Project Setup}
 \begin{enumerate}
     \item Project Title: A Tiny World: Atom Simulation/Rendering
-    \item Members:
+    \item Members and Roles:
         \subitem Chung An, Chen (Andy), 5120AG05-1
+            \subsubitem Software Development, Final Report, Team Management
         \subitem Yang, Liu, 5121FG59
+            \subsubitem Software Development, Setting Up Demo, Slides
         \subitem LinXi, Tao, 5121FG25
+            \subsubitem Material Research, Slides, Final Report
     \item Project Timeline:
         \subitem 12/12 - 12/15 Project Initiation (Done)
             \subsubitem Decided to go with an Atom Simulation/Rendering
@@ -61,26 +64,18 @@
         \subitem 1/17 - 1/31 Creating Slides for the Presentation and Putting together Our Final Report
 \end{enumerate}
 \section{Project Description}
-    this Project is to use \textbf{Taichi} to simulation the electron cloud.An electron cloud is a graph that uses the sparsity of small black dots to indicate the probability of occurrence of each electron in space.
-    
-\begin{figure}[htbp]
-  \vspace{10pt} % 调整图片与上文的垂直距离
-  \centering
-  \includegraphics[]{./concept_1.jpeg}
-  \caption{electron cloud}\label{fig1} % label 用来在文中索引
+    This project aims to simulate and render an atom's presence in a three-dimensional space. The simulation will be grounded on the more accurate electron cloud model, shown in Figure 1 belown. An electron cloud model depicts the occurence of an atom's electrons by a density map containing numerous sparse dots. In any region, the density of the dots draws a directly proportional relationship to the probability of an electron being present. To make this feasible, We leverage a recently-built parallel programming language, namely \textbf{Taichi}, as our main development framework.
+
+\begin{figure}[H]
+\centering
+  \begin{minipage}[b]{0.4\textwidth}
+\includegraphics[width=\textwidth]{./concept_1.jpeg}
+  \end{minipage}
+    \begin{minipage}[b]{0.4\textwidth}
+\includegraphics[width=\textwidth]{./concept_2.png}
+  \end{minipage}
+ \caption{Atoms and Their Nucleus and Electron Cloud}\label{fig1} 
+\label{fig1}
 \end{figure}
 
-\begin{figure}[htbp]
-  \vspace{10pt} % 调整图片与上文的垂直距离
-  \centering
-  \includegraphics[]{./concept_2.png}
-  \caption{electron cloud}\label{fig2} % label 用来在文中索引
-\end{figure}
-
-\section{Roles}
-\begin{itemize}
-    \item Chung An, Chen (Andy), 
-    \item LinXi, Tao, 
-    \item Yang, Liu, user interface
-\end{itemize}
 \end{document}
