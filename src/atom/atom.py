@@ -12,14 +12,13 @@ max_ray_depth = 6
 eps = 1e-4
 inf = 1e10
 
-fov = 0.23
+fov = 0.2
 dist_limit = 100
 
-camera_pos = ti.Vector([0.0, 0.1, 3.7])
-light_pos = [-0, 0.2, 0.3]
-light_normal = [1.0, 0.0, 0.0]
-light_radius = 2.0
-
+camera_pos = ti.Vector([0.0, 0.0, 5.0]) # [x, y, zoom]
+light_pos = [0, 0, 0.0] # [x, y, zoom]
+light_normal = [0.01, 0.01, -0.3]
+light_radius = 0.4
 
 @ti.func
 def intersect_light(pos, d, time):
@@ -39,7 +38,7 @@ def intersect_light(pos, d, time):
 def out_dir(n):
     u = ti.Vector([0.0, 1.0, 0.0])
     if abs(n[1]) < 1 - eps:
-        u = n.cross(ti.Vector([0.0, 1.0, 0.0])).normalized()
+        u = n.cross(ti.Vector([0.5, 1.0, 0.5])).normalized()
     v = n.cross(u)
     phi = 2 * math.pi * ti.random()
     ay = ti.sqrt(ti.random())
@@ -69,33 +68,24 @@ def make_hollow(f):
 # https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 @ti.func
 def sdf(o):
-    wall =  min(o[1] + 0.5, o[2] + 0.4)
+    wall =  min(o[1] + 0.4, o[2] + 0.5)
 
     # Let's draw a Boron
-    # Nucleii and protons:
+    # Neutrons and protons:
 
 
     # Protons
-    proton = (o - ti.Vector([0.05, 0.05, 0.03])).norm() - 0.05
+    proton = (o - ti.Vector([0.09, 0.05, 0.03])).norm() - 0.05
     proton_2 = (o - ti.Vector([0.01, 0.02, 0.05])).norm() - 0.05
     proton_3 = (o - ti.Vector([0.05, -0.07, 0.02])).norm() - 0.05
 
     # Neutrons
-    neutron = (o - ti.Vector([0.10, -0.07, 0.01])).norm() - 0.065
-    neutron_2 = (o - ti.Vector([0.14, 0.02, 0.01])).norm() - 0.065
-    neutron_3 = (o - ti.Vector([0.05, -0.12, -0.03])).norm() - 0.065
+    neutron = (o - ti.Vector([0.15, 0.05, 0.03])).norm() - 0.065
+    neutron_2 = (o - ti.Vector([0.01, 0.09, 0.05])).norm() - 0.065
+    neutron_3 = (o - ti.Vector([0.09, -0.04, 0.09])).norm() - 0.065
 
     # || x - bhat || - c : c changes the size of the sphere
     # bhat changes location 
-
-    # q = ti.abs(o - ti.Vector([0.8, 0.3, 0])) - ti.Vector([0.3, 0.3, 0.3])
-    # box = ti.Vector([max(0, q[0]), max(0, q[1]),
-                     # max(0, q[2])]).norm() + min(q.max(), 0)
-
-    # O = o - ti.Vector([-0.8, 0.3, 0])
-    # d = ti.Vector([ti.Vector([O[0], O[2]]).norm() - 0.3, abs(O[1]) - 0.3])
-    # cylinder = min(d.max(), 0.0) + ti.Vector([max(0, d[0]),
-                                              # max(0, d[1])]).norm()
 
     # geometry = (sphere) # make_nested(min(sphere, box, cylinder))
     proton_geometry = max(proton, -(0.52 - (o[1] * 0.6 + o[2] * 0.8)))
@@ -103,7 +93,7 @@ def sdf(o):
     proton_3_geometry = max(proton_3, -(0.52 - (o[1] * 0.6 + o[2] * 0.8)))
 
     neutron_geometry = max(neutron, -(0.52 - (o[1] * 0.6 + o[2] * 0.8)))
-    neutron_2_geometry = max(neutron_2, -(0.52 - (o[1] * 0.6 + o[2] * 0.8)))
+    neutron_2_geometry = max(neutron_2, -(0.52 - (o[1] * 0.2 + o[2] * 0.8)))
     neutron_3_geometry = max(neutron_3, -(0.52 - (o[1] * 0.6 + o[2] * 0.8)))
 
     return min(wall,
@@ -113,14 +103,14 @@ def sdf(o):
         neutron_geometry,
         neutron_2_geometry,
         neutron_3_geometry,
-        0.15)
+        )
 
 
 @ti.func
 def ray_march(p, d):
-    j = 0
-    dist = 0.5
-    while j < 100 and sdf(p + dist * d) > 1e-6 and dist < inf:
+    j = 0 # steps, should march 20 times or more
+    dist = 0.0
+    while j < 25 and sdf(p + dist * d) > 1e-6 and dist < inf:
         dist += sdf(p + dist * d)
         j += 1
     return min(inf, dist)
@@ -128,14 +118,14 @@ def ray_march(p, d):
 
 @ti.func
 def sdf_normal(p):
-    d = 1e-3
+    d = 1e-4
     n = ti.Vector([0.0, 0.0, 0.0])
     sdf_center = sdf(p)
     for i in ti.static(range(3)):
         inc = p
         inc[i] += d
         n[i] = (1 / d) * (sdf(inc) - sdf_center)
-    return n # n.normalized() shadow becoems more obvious
+    return n.normalized()
 
 
 @ti.func
@@ -147,9 +137,9 @@ def next_hit(pos, d):
         closest = ray_march_dist
         normal = sdf_normal(pos + d * closest)
         hit_pos = pos + d * closest
-        t = int((hit_pos[0] + 10) * 1.1 + 0.5) % 3
+        t = hit_pos.norm()
         c = ti.Vector(
-            [0.4 + 0.3 * (t == 0), 0.4 + 0.2 * (t == 1), 0.4 + 0.3 * (t == 2)])
+            [0.2 * t, 0.2 * t, 0.2 * t]) # color
     return closest, normal, c
 
 
@@ -167,7 +157,7 @@ def render(time: int):
         throughput = ti.Vector([1.0, 1.0, 1.0]) # color tone changes
 
         depth = 0
-        hit_light = 0.00
+        hit_light = 0.0
 
         while depth < max_ray_depth:
             closest, normal, c = next_hit(pos, d)
@@ -187,15 +177,15 @@ def render(time: int):
         color_buffer[u, v] += throughput * hit_light
 
 
-gui = ti.GUI('SDF Path Tracer', res)
+gui = ti.GUI('A Tiny World: Atom', res)
 last_t = 0
-for i in range(50000):
+for i in range(500000):
     render(i)
     interval = 10
     if i % interval == 0 and i > 0:
         print("{:.2f} samples/s".format(interval / (time.time() - last_t)))
         last_t = time.time()
         img = color_buffer.to_numpy() * (1 / (i + 1))
-        img = img / img.mean() * 0.24
-        gui.set_image(np.sqrt(img))
+        img = img / img.mean() * 0.24 # Normalize
+        gui.set_image(np.sqrt(img)) # color smoothing
         gui.show()
