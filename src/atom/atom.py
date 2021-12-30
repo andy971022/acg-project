@@ -15,15 +15,15 @@ inf = 1e10
 fov = 0.23
 dist_limit = 100
 
-camera_pos = ti.Vector([0.0, 0.32, 3.7])
-light_pos = [-1.5, 0.6, 0.3]
+camera_pos = ti.Vector([0.0, 0.1, 3.7])
+light_pos = [-0, 0.2, 0.3]
 light_normal = [1.0, 0.0, 0.0]
 light_radius = 2.0
 
 
 @ti.func
-def intersect_light(pos, d):
-    light_loc = ti.Vector(light_pos)
+def intersect_light(pos, d, time):
+    light_loc = ti.Vector(light_pos) 
     dot = -d.dot(ti.Vector(light_normal))
     dist = d.dot(light_loc - pos)
     dist_to_light = inf
@@ -37,7 +37,7 @@ def intersect_light(pos, d):
 
 @ti.func
 def out_dir(n):
-    u = ti.Vector([1.0, 0.0, 0.0])
+    u = ti.Vector([0.0, 1.0, 0.0])
     if abs(n[1]) < 1 - eps:
         u = n.cross(ti.Vector([0.0, 1.0, 0.0])).normalized()
     v = n.cross(u)
@@ -69,8 +69,24 @@ def make_hollow(f):
 # https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 @ti.func
 def sdf(o):
-    wall = 0.4 # min(o[1] + 0.1, o[2] + 0.4)
-    sphere = (o - ti.Vector([0.0, 0.35, 0.0])).norm() - 0.36
+    wall =  min(o[1] + 0.5, o[2] + 0.4)
+
+    # Let's draw a Boron
+    # Nucleii and protons:
+
+
+    # Protons
+    proton = (o - ti.Vector([0.05, 0.05, 0.03])).norm() - 0.05
+    proton_2 = (o - ti.Vector([0.01, 0.02, 0.05])).norm() - 0.05
+    proton_3 = (o - ti.Vector([0.05, -0.07, 0.02])).norm() - 0.05
+
+    # Neutrons
+    neutron = (o - ti.Vector([0.10, -0.07, 0.01])).norm() - 0.065
+    neutron_2 = (o - ti.Vector([0.14, 0.02, 0.01])).norm() - 0.065
+    neutron_3 = (o - ti.Vector([0.05, -0.12, -0.03])).norm() - 0.065
+
+    # || x - bhat || - c : c changes the size of the sphere
+    # bhat changes location 
 
     # q = ti.abs(o - ti.Vector([0.8, 0.3, 0])) - ti.Vector([0.3, 0.3, 0.3])
     # box = ti.Vector([max(0, q[0]), max(0, q[1]),
@@ -81,15 +97,29 @@ def sdf(o):
     # cylinder = min(d.max(), 0.0) + ti.Vector([max(0, d[0]),
                                               # max(0, d[1])]).norm()
 
-    geometry = make_nested(sphere) # make_nested(min(sphere, box, cylinder))
-    geometry = max(geometry, -(0.32 - (o[1] * 0.6 + o[2] * 0.8)))
-    return min(wall, geometry, 0.1)
+    # geometry = (sphere) # make_nested(min(sphere, box, cylinder))
+    proton_geometry = max(proton, -(0.52 - (o[1] * 0.6 + o[2] * 0.8)))
+    proton_2_geometry = max(proton_2, -(0.52 - (o[1] * 0.6 + o[2] * 0.8)))
+    proton_3_geometry = max(proton_3, -(0.52 - (o[1] * 0.6 + o[2] * 0.8)))
+
+    neutron_geometry = max(neutron, -(0.52 - (o[1] * 0.6 + o[2] * 0.8)))
+    neutron_2_geometry = max(neutron_2, -(0.52 - (o[1] * 0.6 + o[2] * 0.8)))
+    neutron_3_geometry = max(neutron_3, -(0.52 - (o[1] * 0.6 + o[2] * 0.8)))
+
+    return min(wall,
+        proton_geometry,
+        proton_2_geometry,
+        proton_3_geometry,
+        neutron_geometry,
+        neutron_2_geometry,
+        neutron_3_geometry,
+        0.15)
 
 
 @ti.func
 def ray_march(p, d):
     j = 0
-    dist = 0.0
+    dist = 0.5
     while j < 100 and sdf(p + dist * d) > 1e-6 and dist < inf:
         dist += sdf(p + dist * d)
         j += 1
@@ -105,7 +135,7 @@ def sdf_normal(p):
         inc = p
         inc[i] += d
         n[i] = (1 / d) * (sdf(inc) - sdf_center)
-    return n.normalized()
+    return n # n.normalized() shadow becoems more obvious
 
 
 @ti.func
@@ -124,7 +154,7 @@ def next_hit(pos, d):
 
 
 @ti.kernel
-def render():
+def render(time: int):
     for u, v in color_buffer:
         aspect_ratio = res[0] / res[1]
         pos = camera_pos
@@ -134,7 +164,7 @@ def render():
         ])
         d = d.normalized()
 
-        throughput = ti.Vector([1.0, 1.0, 1.0])
+        throughput = ti.Vector([1.0, 1.0, 1.0]) # color tone changes
 
         depth = 0
         hit_light = 0.00
@@ -142,7 +172,7 @@ def render():
         while depth < max_ray_depth:
             closest, normal, c = next_hit(pos, d)
             depth += 1
-            dist_to_light = intersect_light(pos, d)
+            dist_to_light = intersect_light(pos, d, time)
             if dist_to_light < closest:
                 hit_light = 1
                 depth = max_ray_depth
@@ -160,7 +190,7 @@ def render():
 gui = ti.GUI('SDF Path Tracer', res)
 last_t = 0
 for i in range(50000):
-    render()
+    render(i)
     interval = 10
     if i % interval == 0 and i > 0:
         print("{:.2f} samples/s".format(interval / (time.time() - last_t)))
