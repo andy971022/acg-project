@@ -51,11 +51,15 @@ def init():
 
     return electronCloud
 
+def rotate(angle , speed):
+    angle += speed
+    return angle
+
 
 def main():
      ec = init()
 
-     window = ti.ui.Window('Solar System', (800, 800), vsync=True)
+     window = ti.ui.Window('Solar System', (800, 800))
      canvas = window.get_canvas()
      scene = ti.ui.Scene()
      camera = ti.ui.make_camera()
@@ -64,10 +68,16 @@ def main():
      camera.lookat(0.0, 0.0, 0.0)
      camera.fov(20)
 
+     angle = 0
+     speed = 0.0005
 
      while window.running:
-        # ec.update(0.01)
+        angle = rotate(angle, speed)
+        x = ti.sin(angle) * 10.0
+        y = ti.cos(angle) * 10.0
+        camera.position(x, y, 5.0)
         scene.set_camera(camera)
+
         ec.display(scene)
         scene.point_light(pos=(0.0, -5.0, 5.0), color=(0.5, 0.5, 0.5))
         canvas.scene(scene)
