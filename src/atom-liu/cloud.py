@@ -1,5 +1,6 @@
 import taichi as ti
 
+
 class Atom:
     def __init__(self, radius, dim=3):
         self.radius = radius
@@ -34,8 +35,7 @@ class Electron(Atom):
         self.vel = ti.Vector.field(dim, ti.f32, shape=1)
 
     @ti.kernel
-    def initialize(self, color: ti.template(), pos: ti.template(),
-                   vel: ti.template()):
+    def initialize(self, color: ti.template(), pos: ti.template(), vel: ti.template()):
         self.color[0] = color
         self.pos[0] = pos
         self.vel[0] = vel
@@ -58,7 +58,6 @@ class ElectronCloud:
 
     def add_electron(self, electron):
         self.electrons.append(electron)
-
 
     def display(self, scene):
         for i in self.protons:
