@@ -48,19 +48,19 @@
 %% values in them; it is your responsibility as an author to replace
 %% the commands and values with those provided to you when you
 %% complete the rights form.
-\setcopyright{acmcopyright}
-\copyrightyear{2018}
-\acmYear{2018}
-\acmDOI{10.1145/1122445.1122456}
+% \setcopyright{acmcopyright}
+% \copyrightyear{2018}
+% \acmYear{2018}
+% \acmDOI{10.1145/1122445.1122456}
 
 
 %%
 %% These commands are for a JOURNAL article.
-\acmJournal{TOG}
-\acmVolume{37}
-\acmNumber{4}
-\acmArticle{111}
-\acmMonth{8}
+% \acmJournal{TOG}
+% \acmVolume{37}
+% \acmNumber{4}
+% \acmArticle{111}
+% \acmMonth{8}
 
 %%
 %% Submission ID.
@@ -104,7 +104,6 @@
 %% other information printed in the page headers. This command allows
 %% the author to define a more concise list
 %% of authors' names for this purpose.
-\renewcommand{\shortauthors}{Trovato and Tobin, et al.}
 
 %%
 %% The abstract is a short summary of the work to be presented in the
@@ -136,11 +135,17 @@ This project aims to simulate and render a Carbon atom's presence in a three-dim
 \end{figure}
 
 \section{Software}
-\textbf{Taichi} is a high-performance Domain-Specific Language for computer graphics applications. \textbf{Taichi} is designed towards performance, portability, spatially sparse computation, and differentiable programming. Despite inheriting most of its syntax from Python, \textbf{Taichi} does not carry over the downsides, for example, the slow computation speed, from Python.
+\textbf{Taichi} is a Python-based Domain-Specific Language designed for differentiable programming and speed up computer graphics development without compromisiing too much rendering performance. Despite inheriting most of its syntax from Python, \textbf{Taichi} relies on mostly parallel programming and does not carry over the downsides, for example, the slow computation speed, from Python.
 
-\textbf{Taichi} is a higher level language such that it can be made to run on multiple mainstream rendering backends such as OpenGL, CUDA, and Metal. Using Pythonic decorators such as @ti.kernel and @ti.func brings the succeeding block of code into \textbf{Taichi}'s scope, where functions are naturally parallelized and differentiable on CPU or GPU devices. Two main data types in \textbf{Taichi} are Primitive Types and Compound Types. Primitive Types are numerical data types used by backends, while Compound Types are user-defined types composed of multiple members. To communicate between \textbf{Taichi}'s scope and Python's Scope, we use a global variables object called Field. They are commonly multi-dimensional array of elements of the following: a scalar, a vector, a matrix or a st, and can be either dense or sparse. Similar to a NumPy ndarray object, a field has a data type and a shape.
+\textbf{Taichi} is a higher level language such that it can be made to run on multiple mainstream rendering backends such as OpenGL, CUDA, and Metal. Using Pythonic decorators such as @ti.kernel and @ti.func brings the succeeding block of code into \textbf{Taichi}'s scope, where functions are naturally parallelized and differentiable on CPU or GPU devices. Two main data types in \textbf{Taichi} are Primitive Types and Compound Types. Primitive Types are numerical data types used by backends, while Compound Types are user-defined types composed of multiple members. To bridge across \textbf{Taichi}'s scope and Python's Scope, we use a global variable object called Field. They can correspond to OpenGL's vectors or matrices depending on how users define them.
+
+\section{Code and Development}
+We decided to proceed with render a Carbon atom to represent the main topic of our work. However, we can easily scale up or down by editting the code to render other atoms as they only differ by the number of protons, neutrons, electrons, and the layers of the electron cloud. 
+
+For the prototype, we started off by using a simple ray-marching and shatter light of extremely small radius directed to the protons and neutrons. We used a trick here, so that the shadow of the protons and neutrons form a relatively hollow region to represent the sparseness of the electrons. Whereas in the outer region, where the light is able to fully hit the back of the wall, we find a denser cloud of electrons.
 
 
+We define protons and neutrons to be roughly equal size of round particles, with neutrons being slightly larger, of size around 0.05.
 
 
 
