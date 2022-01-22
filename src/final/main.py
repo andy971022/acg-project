@@ -93,9 +93,12 @@ def main():
     camera.fov(15)
 
     angle = 0
-    speed = 8e-4
+    speed = 8e-2
 
+    count = 0
     while window.running:
+        if count >= 500:
+            window.running = False
         angle = rotate(angle, speed)
         x = ti.sin(angle) * 10.0
         y = ti.cos(angle) * 10.0
@@ -106,6 +109,8 @@ def main():
         scene.particles(pos_2, radius=0.003, per_vertex_color=color_2)
         scene.point_light(pos=(x, y, 5.0), color=(0.5, 0.5, 0.5))
         canvas.scene(scene)
+        window.write_image("./frames/frame{:03d}.png".format(count))
+        count += 1
         window.show()
 
 

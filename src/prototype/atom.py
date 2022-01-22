@@ -10,14 +10,14 @@ res = 1280, 720
 color_buffer = ti.Vector.field(3, dtype=ti.f32, shape=res)
 max_ray_depth = 15
 eps = 1e-4
-inf = 1e10
+inf = 8.2e0 # Scatter Radius
 
 fov = 0.7  # field of view
 dist_limit = 100
 
-camera_pos = ti.Vector([0.0, 0.0, 5.0])  # [x, y, zoom]
+camera_pos = ti.Vector([0.00, 0.00, 5.0])  # [x, y, zoom]
 light_pos = [0.0, 0.0, 0.0]  # [x, y, zoom]
-light_normal = [0.01, 0.01, -0.3]
+light_normal = [0.00, 0.00, -0.3]
 light_radius = 0.4
 
 
@@ -126,7 +126,7 @@ def next_hit(pos, d):
 
 
 @ti.kernel
-def render():
+def render(time: float, total: int):
     for u, v in color_buffer:
         aspect_ratio = res[0] / res[1]
         pos = camera_pos
@@ -163,9 +163,10 @@ def render():
 
 
 gui = ti.GUI("A Tiny World: Atom", res)
+video_manager = ti.VideoManager(output_dir="./", framerate=24, automatic_build=False)
 last_t = 0
-for i in range(500000):
-    render()
+for i in range(2000):
+    render(float(i), 2000)
     interval = 10
     if i % interval == 0 and i > 0:
         print("{:.2f} samples/s".format(interval / (time.time() - last_t)))
@@ -173,4 +174,7 @@ for i in range(500000):
         img = color_buffer.to_numpy() * (1 / (i + 1))
         img = img / img.mean() * 0.24  # Normalize
         gui.set_image(np.sqrt(img))  # color smoothing
+        video_manager.write_frame(np.sqrt(img))
         gui.show()
+
+video_manager.make_video(gif=True, mp4=True)
