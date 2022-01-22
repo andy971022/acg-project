@@ -94,9 +94,9 @@
 %% Of note is the shared affiliation of the first two authors, and the
 %% "authornote" and "authornotemark" commands
 %% used to denote shared contribution to the research.
-\author{Chung An, Chen}
-\author{Yang, Liu}
-\author{Linxi, Tao}
+\author{Chung An, Chen (5120AG05-1)}
+\author{Yang, Liu (5121FG59)}
+\author{Linxi, Tao (5121FG25)}
 
 %%
 %% By default, the full list of authors will be used in the page
@@ -161,6 +161,14 @@ For the next step, we decided to proceed with rendering protons, neutrons, and e
   \caption{A (Rotating) Carbon Atom}
 \end{figure}
 
+Here is another version, shown in Figure 4, of the Carbon atom but with slightly more visible electron cloud particles.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{./carbon_2.png}
+  \caption{A (Rotating) Carbon Atom,}
+\end{figure}
+
 We set the electron clouds to two different colors just to make the image more friendly to human eyes. In the center we have six protons and six neutrons rendered green and red respectively. There are two hollow spaces in the image with one located in between the inner electron cloud layer and the neucleus and the other located between the two layers of electron cloud. This is because the energy that an electron can emit or absorbed is quantized, and thus electrons can only appear in specific levels of orbit. 
 
 \begin{figure}[h]
@@ -170,7 +178,7 @@ We set the electron clouds to two different colors just to make the image more f
   \caption{Particle Implementation}
 \end{figure}
 
-Figure 4 shows the general implementation of a single proton, neutron, and electron particle. We simply render them as spherical objects with different sizes and colors. In reality, protons tend to repel each other and attract neutrons. Therefore, in our implementation, we try to pair protons to neutrons so that protons are not clustered and are some what distant apart.
+Figure 5 shows the general implementation of a single proton, neutron, and electron particle. We simply render them as spherical objects with different sizes and colors. In reality, protons tend to repel each other and attract neutrons. Therefore, in our implementation, we try to pair protons to neutrons so that protons are not clustered and are some what distant apart.
 
 \begin{figure}[h]
   \centering
@@ -178,7 +186,7 @@ Figure 4 shows the general implementation of a single proton, neutron, and elect
   \caption{Electron Cloud}
 \end{figure}
 
-Figure 5 shows the formation of shells of electron clouds. Randomness is added to not only distribute them across the shell but also to level electrons on the same shell unevenly.
+Figure 6 shows the formation of shells of electron clouds. Randomness is added to not only distribute them across the shell but also to level electrons on the same shell unevenly.
 
 \begin{figure}[h]
   \centering
@@ -187,7 +195,7 @@ Figure 5 shows the formation of shells of electron clouds. Randomness is added t
   \caption{Rotation Implementation}
 \end{figure}
 
-Figure 6 shows how we rotate the camera to mimic the rotation of the atom instead of giving each partical a velocity and acceleration, which is extremely computationally expensive.
+Figure 7 shows how we rotate the camera to mimic the rotation of the atom instead of giving each partical a velocity and acceleration, which is extremely computationally expensive.
 
 \begin{figure}[h]
   \centering
@@ -196,7 +204,7 @@ Figure 6 shows how we rotate the camera to mimic the rotation of the atom instea
 \end{figure}
 
 
-Figure 7 is an example another implementation with differnt hyperparamters, namely an imaginary atom containing a neucleus of one proton and one neutron with three layers of electron clouds.
+Figure 8 is an example another implementation with differnt hyperparamters, namely an imaginary atom containing a neucleus of one proton and one neutron with three layers of electron clouds.
 
 \section{Source}
 All of our work can be found here \href{https://github.com/andy971022/acg-project}{https://github.com/andy971022/acg-project}.
