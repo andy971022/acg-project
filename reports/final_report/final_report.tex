@@ -118,12 +118,13 @@
 %%
 %% This command processes the author and affiliation and title
 %% information and builds the first part of the formatted document.
+\keywords{Taichi, Atom, 3D, Rendering, Electron Cloud}
 \maketitle
 
 \section{Introduction}
 Prior to the electron cloud model, there are a lot of attempts on building a theoretical model for an atom. Most of them, for example, the commonly known Rutherford-Bohr model, perceive the electrons as if they are planets orbiting the sun --- a non-changing centripetal movement. The electron cloud, however, models an atom consisting of a small, yet massive when put aside to its electrons, nucleus surrounded by a non-deterministic cloud of electrons.
 
-In the electron cloud model, electrons can theoretically be found anywhere in the space. However, they can be found more often in some regions, which we usually call them orbitals despite no orbital motions of electrons are being held, than others. A Carbon atom has two orbitals, where the inner layer contains two electrons and the outer layer contains four, and electrons are less likely to be found in between the two layers.
+In the electron cloud model, electrons can theoretically be found anywhere in the space. However, they are generally found more often in some regions, which we usually call them orbitals despite no orbital motions of electrons are being held, than others. A Carbon atom has two orbitals with the inner layer contains two electrons and the outer layer contains four. Electrons are less likely to be found in between layers.
 
 This project aims to simulate and render a Carbon atom's presence in a three-dimensional space. The simulation will be grounded in the more accurate electron cloud model, shown in Figure 1 below. An electron cloud model depicts the occurence of an atom's electrons by a density map containing numerous sparse dots. In any region, the density of the dots draws a directly proportional relationship to the probability of an electron being present. To illustrate this model, We leverage a recently-built parallel programming language, namely \textbf{Taichi}, as our main development framework.
 
@@ -135,21 +136,111 @@ This project aims to simulate and render a Carbon atom's presence in a three-dim
 \end{figure}
 
 \section{Software}
-\textbf{Taichi} is a Python-based Domain-Specific Language designed for differentiable programming and speed up computer graphics development without compromisiing too much rendering performance. Despite inheriting most of its syntax from Python, \textbf{Taichi} relies on mostly parallel programming and does not carry over the downsides, for example, the slow computation speed, from Python.
+\textbf{Taichi} is a Python-based Domain-Specific Language designed for differentiable programming and speed up computer graphics development without compromising too much rendering performance. Despite inheriting most of its syntax from Python, \textbf{Taichi} relies on mostly parallel programming and does not carry over the downsides, for example, the slow computation speed, from Python.
 
 \textbf{Taichi} is a higher level language such that it can be made to run on multiple mainstream rendering backends such as OpenGL, CUDA, and Metal. Using Pythonic decorators such as @ti.kernel and @ti.func brings the succeeding block of code into \textbf{Taichi}'s scope, where functions are naturally parallelized and differentiable on CPU or GPU devices. Two main data types in \textbf{Taichi} are Primitive Types and Compound Types. Primitive Types are numerical data types used by backends, while Compound Types are user-defined types composed of multiple members. To bridge across \textbf{Taichi}'s scope and Python's Scope, we use a global variable object called Field. They can correspond to OpenGL's vectors or matrices depending on how users define them.
 
 \section{Code and Development}
 We decided to proceed with render a Carbon atom to represent the main topic of our work. However, we can easily scale up or down by editting the code to render other atoms as they only differ by the number of protons, neutrons, electrons, and the layers of the electron cloud. 
 
-For the prototype, we started off by using a simple ray-marching and shatter light of extremely small radius directed to the protons and neutrons. We used a trick here, so that the shadow of the protons and neutrons form a relatively hollow region to represent the sparseness of the electrons. Whereas in the outer region, where the light is able to fully hit the back of the wall, we find a denser cloud of electrons.
+For the prototype shown in Figure 2, we started off by using a simple ray-marching model and shattered beams of light of extremely small radius towards the protons and neutrons. Instead of directly specifying the layers of electron cloud, we manipulate shadow of the protons and neutrons and use them to form a relatively hollow region to represent the sparseness of the electrons. In the outer region, the light beams are able to fully hit the back of the wall and thus generating a denser cloud of electrons.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{./prototype.png}
+  \caption{Ray-marching Prototype}
+\end{figure}
+
+However, we did not proceed with the prototype as the layers of electrons cloud are not scalable.
+
+For the next step, we decided to proceed with rendering protons, neutrons, and electrons as tiny particles.
+We abide the physics observations and define protons and neutrons to be roughly equal size of round particles, with neutrons being slightly larger, of size around 0.05. We do not render the electrons since they only possess mass and charge. We use particles that are ten times smaller just to depict the electron cloud.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{./carbon.png}
+  \caption{A (Rotating) Carbon Atom}
+\end{figure}
+
+We set the electron clouds to two different colors just to make the image more friendly to human eyes. In the center we have six protons and six neutrons rendered green and red respectively. There are two hollow spaces in the image with one located in between the inner electron cloud layer and the neucleus and the other located between the two layers of electron cloud. This is because the energy that an electron can emit or absorbed is quantized, and thus electrons can only appear in specific levels of orbit. 
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{./atom.png}
+  \includegraphics[width=\linewidth]{./proton.png}
+  \caption{Particle Implementation}
+\end{figure}
+
+Figure 4 shows the general implementation of a single proton, neutron, and electron particle. We simply render them as spherical objects with different sizes and colors. In reality, protons tend to repel each other and attract neutrons. Therefore, in our implementation, we try to pair protons to neutrons so that protons are not clustered and are some what distant apart.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{./electron_cloud.png}
+  \caption{Electron Cloud}
+\end{figure}
+
+Figure 5 shows the formation of shells of electron clouds. Randomness is added to not only distribute them across the shell but also to level electrons on the same shell unevenly.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{./rotate.png}
+  \includegraphics[width=\linewidth]{./camera.png}
+  \caption{Rotation Implementation}
+\end{figure}
+
+Figure 6 shows how we rotate the camera to mimic the rotation of the atom instead of giving each partical a velocity and acceleration, which is extremely computationally expensive.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{./example.png}
+  \caption{A Different Example}
+\end{figure}
 
 
-We define protons and neutrons to be roughly equal size of round particles, with neutrons being slightly larger, of size around 0.05.
+Figure 7 is an example another implementation with differnt hyperparamters, namely an imaginary atom containing a neucleus of one proton and one neutron with three layers of electron clouds.
+
+\section{Source}
+All of our work can be found here \href{https://github.com/andy971022/acg-project}{https://github.com/andy971022/acg-project}.
 
 
+  Some examples.  A paginated journal article \cite{Abril07}, an
+  enumerated journal article \cite{Cohen07}, a reference to an entire
+  issue \cite{JCohen96}, a monograph (whole book) \cite{Kosiur01}, a
+  monograph/whole book in a series (see 2a in spec. document)
+  \cite{Harel79}, a divisible-book such as an anthology or compilation
+  \cite{Editor00} followed by the same example, however we only output
+  the series if the volume number is given \cite{Editor00a} (so
+  Editor00a's series should NOT be present since it has no vol. no.),
+  a chapter in a divisible book \cite{Spector90}, a chapter in a
+  divisible book in a series \cite{Douglass98}, a multi-volume work as
+  book \cite{Knuth97}, a couple of articles in a proceedings (of a
+  conference, symposium, workshop for example) (paginated proceedings
+  article) \cite{Andler79, Hagerup1993}, a proceedings article with
+  all possible elements \cite{Smith10}, an example of an enumerated
+  proceedings article \cite{VanGundy07}, an informally published work
+  \cite{Harel78}, a couple of preprints \cite{Bornmann2019,
+    AnzarootPBM14}, a doctoral dissertation \cite{Clarkson85}, a
+  master's thesis: \cite{anisi03}, an online document / world wide web
+  resource \cite{Thornburg01, Ablamowicz07, Poker06}, a video game
+  (Case 1) \cite{Obama08} and (Case 2) \cite{Novak03} and \cite{Lee05}
+  and (Case 3) a patent \cite{JoeScientist001}, work accepted for
+  publication \cite{rous08}, 'YYYYb'-test for prolific author
+  \cite{SaeediMEJ10} and \cite{SaeediJETC10}. Other cites might
+  contain 'duplicate' DOI and URLs (some SIAM articles)
+  \cite{Kirschmer:2010:AEI:1958016.1958018}. Boris / Barbara Beeton:
+  multi-volume works as books \cite{MR781536} and \cite{MR781537}. A
+  couple of citations with DOIs:
+  \cite{2004:ITE:1009386.1010128,Kirschmer:2010:AEI:1958016.1958018}. Online
+  citations: \cite{TUGInstmem, Thornburg01, CTANacmart}. Artifacts:
+  \cite{R} and \cite{UMassCitations}.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{sample-base}
 
 \end{document}
+
+
+
 \endinput
 %%
 %% End of file `sample-acmtog.tex'.
