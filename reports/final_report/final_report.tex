@@ -136,7 +136,7 @@ This project aims to simulate and render a Carbon atom's presence in a three-dim
 \end{figure}
 
 \section{Software}
-\textbf{Taichi} is a Python-based Domain-Specific Language designed for differentiable programming and speed up computer graphics development without compromising too much rendering performance. Despite inheriting most of its syntax from Python, \textbf{Taichi} relies on mostly parallel programming and does not carry over the downsides, for example, the slow computation speed, from Python.
+\textbf{Taichi} is a Python-based Domain-Specific Language designed for differentiable programming and to speed up computer graphics development without compromising too much rendering performance. Despite inheriting most of its syntax from Python, \textbf{Taichi} relies on mostly parallel programming and does not carry over the downsides, for example, the slow computation speed, from Python.
 
 \textbf{Taichi} is a higher level language such that it can be made to run on multiple mainstream rendering backends such as OpenGL, CUDA, and Metal. Using Pythonic decorators such as @ti.kernel and @ti.func brings the succeeding block of code into \textbf{Taichi}'s scope, where functions are naturally parallelized and differentiable on CPU or GPU devices. Two main data types in \textbf{Taichi} are Primitive Types and Compound Types. Primitive Types are numerical data types used by backends, while Compound Types are user-defined types composed of multiple members. To bridge across \textbf{Taichi}'s scope and Python's Scope, we use a global variable object called Field. They can correspond to OpenGL's vectors or matrices depending on how users define them.
 
