@@ -126,7 +126,7 @@ Prior to the electron cloud model, there are a lot of attempts on building a the
 
 In the electron cloud model, electrons can theoretically be found anywhere in the space. However, they are generally found more often in some regions, which we usually call them orbitals despite no orbital motions of electrons are being held, than others. A Carbon atom has two orbitals with the inner layer contains two electrons and the outer layer contains four. Electrons are less likely to be found in between layers.
 
-This project aims to simulate and render a Carbon atom's presence in a three-dimensional space. The simulation will be grounded in the more accurate electron cloud model, shown in Figure 1 below. An electron cloud model depicts the occurence of an atom's electrons by a density map containing numerous sparse dots. In any region, the density of the dots draws a directly proportional relationship to the probability of an electron being present. To illustrate this model, We leverage a recently-built parallel programming language, namely \textbf{Taichi}, as our main development framework.
+This project aims to simulate and render a Carbon atom's presence in a three-dimensional space. The simulation will be grounded in the more accurate electron cloud model, shown in Figure 1 below. An electron cloud model depicts the occurence of an atom's electrons by a density map containing numerous sparse dots. In any region, the density of the dots draws a directly proportional relationship to the probability of an electron being present. To illustrate this model, We leverage a recently-built parallel programming language, namely \textbf{Taichi} \cite{hu2019taichi}, as our main development framework.
 
 \begin{figure}[h]
   \centering
@@ -153,8 +153,7 @@ For the prototype shown in Figure 2, we started off by using a simple ray-marchi
 
 However, we did not proceed with the prototype as the layers of electrons cloud are not scalable.
 
-For the next step, we decided to proceed with rendering protons, neutrons, and electrons as tiny particles.
-We abide the physics observations and define protons and neutrons to be roughly equal size of round particles, with neutrons being slightly larger, of size around 0.05. We do not render the electrons since they only possess mass and charge. We use particles that are ten times smaller just to depict the electron cloud.
+For the next step, we decided to proceed with rendering protons, neutrons, and electron clouds using tiny particles. We abide the physics observations and define protons and neutrons to be roughly equal size of round particles, with neutrons being slightly larger, of size around 0.05. We do not render the electrons since they only possess mass and charge. We use particles that are ten times smaller just to depict the electron cloud.
 
 \begin{figure}[h]
   \centering
